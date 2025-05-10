@@ -1,5 +1,5 @@
 -- TODO: lifecycle del buffer? meaning, do i need to close/destroy the buffer after use?
-local config = require("config")
+local config = require("nvim-language-doc.config")
 local M = {}
 
 ---Open help window on the right side

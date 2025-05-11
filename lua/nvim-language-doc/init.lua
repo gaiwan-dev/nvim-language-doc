@@ -1,7 +1,7 @@
 -- TODO: lifecycle del buffer? meaning, do i need to close/destroy the buffer after use?
 -- expose the config and actually use it
 -- add a panel like `sg` to enter a specific method/class without having to rely on cursor
-local config = require("nvim-language-doc.config")
+local default_config = require("nvim-language-doc.config")
 
 local M = {}
 
@@ -10,7 +10,7 @@ function M._open_help_window(cmd)
 	local arg = vim.fn.expand("<cword>")
 	local buffnr = vim.api.nvim_create_buf(true, true)
 
-	local cmd_content = vim.fn.system(cmd .. arg)
+	local cmd_content = vim.fn.system(cmd .. " " .. arg)
 
 	vim.api.nvim_buf_set_lines(buffnr, 0, -1, false, vim.split(cmd_content, "\n"))
 	local win_id = vim.api.nvim_open_win(buffnr, true, {
@@ -28,7 +28,7 @@ end
 ---@return string?
 function M._get_cmd_by_lsp()
 	local lsps = vim.lsp.get_clients()
-	local lsp_configured = config.get_default_config().default
+	local lsp_configured = M.config.lsp
 
 	for _, lsp in ipairs(lsps) do
 		local name = lsp.name
@@ -40,6 +40,10 @@ function M._get_cmd_by_lsp()
 	end
 	print("Failed to find a helper command for the language you are using. Add it to the config.")
 	return nil
+end
+
+function M.setup(custom_config)
+	M.config = vim.tbl_extend("force", default_config.config, custom_config or {})
 end
 
 function M.execute()

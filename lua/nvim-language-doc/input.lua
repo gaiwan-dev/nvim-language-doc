@@ -1,0 +1,1 @@
+--workflow for invoking the docstring from input

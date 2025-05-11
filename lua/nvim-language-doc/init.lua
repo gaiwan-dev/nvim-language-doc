@@ -1,6 +1,5 @@
--- TODO: lifecycle del buffer? meaning, do i need to close/destroy the buffer after use?
--- expose the config and actually use it
--- add a panel like `sg` to enter a specific method/class without having to rely on cursor
+-- TODO: add a panel like `sg` to enter a specific method/class without having to rely on cursor
+-- TODO: add python support for module.class like pathlib.Path
 local default_config = require("nvim-language-doc.config")
 
 local M = {}

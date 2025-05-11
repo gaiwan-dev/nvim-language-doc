@@ -5,7 +5,6 @@ function M.get_default_config()
 		default = {
 			ruff = "python3 -m pydoc ",
 			pyright = "python3 -m pydoc ",
-			lua_ls = "python3 -m pydoc ",
 		},
 		settings = {},
 	}

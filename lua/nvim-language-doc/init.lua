@@ -5,7 +5,8 @@ local default_config = require("nvim-language-doc.config")
 
 local M = {}
 
----Open help window on the right side
+---open docs window with the output of the command being executed
+---@param cmd string
 function M._open_help_window(cmd)
 	local arg = vim.fn.expand("<cword>")
 	local buffnr = vim.api.nvim_create_buf(true, true)
@@ -42,10 +43,13 @@ function M._get_cmd_by_lsp()
 	return nil
 end
 
+---merge the default config with the user config and set it in M
+---@param custom_config table
 function M.setup(custom_config)
 	M.config = vim.tbl_extend("force", default_config.config, custom_config or {})
 end
 
+---current primary function that is used by the ShowDocs command exposed
 function M.execute()
 	local cmd = M._get_cmd_by_lsp()
 	if cmd ~= nil then

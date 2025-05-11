@@ -14,7 +14,7 @@ function M._open_help_window(cmd)
 
 	vim.api.nvim_buf_set_lines(buffnr, 0, -1, false, vim.split(cmd_content, "\n"))
 	local win_id = vim.api.nvim_open_win(buffnr, true, {
-		split = "right",
+		split = M.config.window.position,
 		win = 0,
 		style = "minimal",
 	})

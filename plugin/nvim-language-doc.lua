@@ -6,5 +6,5 @@ vim.api.nvim_create_user_command("ShowDocs", function()
 end, {})
 
 vim.api.nvim_create_user_command("ShowPy", function()
-    py.something()
+    py.extract_module()
 end, {})

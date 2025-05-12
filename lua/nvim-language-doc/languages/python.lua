@@ -54,7 +54,7 @@ function M.find_import_node(identifier)
     return nil
 end
 
-function M.something()
+function M.extract_module()
     local node = ts_utils.get_node_at_cursor()
     if node:type() == "identifier" then
         local identifier = node_print(node, 0)

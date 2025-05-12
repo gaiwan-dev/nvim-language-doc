@@ -3,6 +3,8 @@ local ts_utils = require("nvim-treesitter.ts_utils")
 local node_print = vim.treesitter.get_node_text
 
 -- Helper function to search for the import node
+---@param identifier string: name of the word currently selected
+---@return string?: argument to send to pydoc or nil if not found
 function M.find_import_node(identifier)
     local current_node = ts_utils.get_node_at_cursor()
 
@@ -54,6 +56,8 @@ function M.find_import_node(identifier)
     return nil
 end
 
+---extract the module to run against pydoc
+---@return string?
 function M.extract_module()
     local node = ts_utils.get_node_at_cursor()
     if node:type() == "identifier" then

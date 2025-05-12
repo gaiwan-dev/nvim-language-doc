@@ -1,13 +1,15 @@
 -- TODO: add a panel like `sg` to enter a specific method/class without having to rely on cursor
--- TODO: add python support for module.class like pathlib.Path
 local default_config = require("nvim-language-doc.config")
+local py_plugin = require("nvim-language-doc.languages.python")
 
 local M = {}
 
 ---open docs window with the output of the command being executed
 ---@param cmd string
-function M._open_help_window(cmd)
-    local arg = vim.fn.expand("<cword>")
+function M._open_help_window(cmd, arg)
+    if arg == nil then
+        arg = vim.fn.expand("<cword>")
+    end
     local buffnr = vim.api.nvim_create_buf(true, true)
 
     local cmd_content = vim.fn.system(cmd .. " " .. arg)
@@ -57,11 +59,13 @@ function M.setup(custom_config)
         vim.tbl_extend("force", default_config.config, custom_config or {})
 end
 
----current primary function that is used by the ShowDocs command exposed
+-- TODO: understand how the plugin system can be more dynamic. Example based on file type?
+---primary function that is used by the ShowDocs command exposed
 function M.execute()
     local cmd = M._get_cmd_by_lsp()
     if cmd ~= nil then
-        M._open_help_window(cmd)
+        local argument = py_plugin.extract_module()
+        M._open_help_window(cmd, argument)
     end
 end
 

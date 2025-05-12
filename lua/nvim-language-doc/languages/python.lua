@@ -1,15 +1,13 @@
 local M = {}
 local ts_utils = require("nvim-treesitter.ts_utils")
+local node_print = vim.treesitter.get_node_text
 
 -- Helper function to search for the import node
 function M.find_import_node(identifier)
     local current_node = ts_utils.get_node_at_cursor()
 
-    print(current_node)
-    print("enter while")
     -- Walk up the tree to the module node
     while current_node do
-        print(">> ", current_node)
         if current_node:type() == "module" then
             break
         end
@@ -17,54 +15,58 @@ function M.find_import_node(identifier)
     end
 
     if not current_node then
-        print("Module not found!")
+        print("Module not found for %s", identifier)
         return nil
     end
+    for i, _ in current_node:iter_children() do
+        if
+            i:type() == "import_from_statement"
+            or i:type() == "import_statement"
+        then
+            -- Importing from a specific module
+            if i:type() == "import_from_statement" then
+                local module_name = nil
 
-    -- Traverse siblings to find the matching import statement
-    local child = current_node:child(0)
-    while child do
-        if child:type() == "import_from_statement" then
-            print(">>>> ", child)
-            print(vim.inspect(child))
-            print("~ ", vim.inspect(child:field("module_name")))
-            for k, v in ipairs(child:field("module_name")) do
-                print("~ ", k, v)
-            end
-            local module_name =
-                vim.treesitter.get_node_text(child:field("module_name")[1], 0)
-            local names = child:field("names")
-            for _, name_node in ipairs(names) do
-                local name_text = vim.treesitter.get_node_text(name_node, 0)
-                if name_text == identifier then
-                    return module_name, name_text
+                for j, _ in i:iter_children() do
+                    if j:type() == "dotted_name" and not module_name then
+                        -- First dotted_name is always the module
+                        module_name = node_print(j, 0)
+                    elseif
+                        (j:type() == "dotted_name" or j:type() == "identifier")
+                        and node_print(j, 0) == identifier
+                    then
+                        return module_name .. "." .. node_print(j, 0)
+                    end
+                end
+            elseif i:type() == "import_statement" then
+                -- Standard import
+                for j, _ in i:iter_children() do
+                    if
+                        j:type() == "dotted_name"
+                        and node_print(j, 0) == identifier
+                    then
+                        return identifier
+                    end
                 end
             end
         end
-        child = child:next_sibling()
-        print("Sibling ", child)
     end
     return nil
 end
 
--- Main function to display the module path
-
 function M.something()
     local node = ts_utils.get_node_at_cursor()
     if node:type() == "identifier" then
-        local identifier = vim.treesitter.get_node_text(node, 0)
-        print(identifier)
-        local module, name = M.find_import_node(identifier)
-        if module then
-            print(string.format("%s is imported from %s", name, module))
-        else
-            print("No associated import found!")
+        local identifier = node_print(node, 0)
+        local import = M.find_import_node(identifier)
+        if import then
+            return import
         end
+        print("No associated import found for ", identifier)
     else
-        print("Cursor is not on an identifier!")
+        print("Cursor is not on an identifier.")
     end
+    return nil
 end
 
--- Create a Neovim command to trigger this
--- api.nvim_create_user_command('ShowModulePath', show_module_path, {})
 return M

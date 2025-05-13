@@ -57,10 +57,6 @@ function M.find_import_node(identifier)
     return nil
 end
 
--- TODO: in cases like import pathlib; pathlib.Path() with cursor on pathlib it returns
--- pathlib.Path instead of pathlib only
--- TODO: tests
--- TODO: if module not found dont open the window
 ---extract the module to run against pydoc
 ---@return string?
 function M.extract_module()

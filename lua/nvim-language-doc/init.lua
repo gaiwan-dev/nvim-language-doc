@@ -12,7 +12,13 @@ function M._open_help_window(cmd, arg)
     end
     local buffnr = vim.api.nvim_create_buf(true, true)
 
-    local cmd_content = vim.fn.system(cmd .. " " .. arg)
+    local full_cmd = cmd .. " " .. arg
+    local cmd_content = vim.fn.system(full_cmd)
+
+    if cmd_content:find("No Python documentation found for") then
+        print("No Python documentation found for", arg)
+        return nil
+    end
 
     vim.api.nvim_buf_set_lines(
         buffnr,

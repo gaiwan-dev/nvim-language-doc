@@ -20,6 +20,7 @@ function M.find_import_node(identifier)
         print("Module not found for %s", identifier)
         return nil
     end
+
     for i, _ in current_node:iter_children() do
         if
             i:type() == "import_from_statement"
@@ -56,12 +57,26 @@ function M.find_import_node(identifier)
     return nil
 end
 
+-- TODO: in cases like import pathlib; pathlib.Path() with cursor on pathlib it returns
+-- pathlib.Path instead of pathlib only
+-- TODO: tests
+-- TODO: if module not found dont open the window
 ---extract the module to run against pydoc
 ---@return string?
 function M.extract_module()
     local node = ts_utils.get_node_at_cursor()
     if node:type() == "identifier" then
         local identifier = node_print(node, 0)
+        local parent = node:parent()
+        local parent_str = node_print(parent, 0)
+        if
+            parent
+            and parent:type() == "attribute"
+            and parent_str:find(identifier)
+        then
+            return parent_str
+        end
+
         local import = M.find_import_node(identifier)
         if import then
             return import

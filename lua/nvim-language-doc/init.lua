@@ -7,9 +7,6 @@ local M = {}
 ---open docs window with the output of the command being executed
 ---@param cmd string
 function M._open_help_window(cmd, arg)
-    if arg == nil then
-        arg = vim.fn.expand("<cword>")
-    end
     local buffnr = vim.api.nvim_create_buf(true, true)
 
     local full_cmd = cmd .. " " .. arg

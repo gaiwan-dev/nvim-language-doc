@@ -1,4 +1,3 @@
----@diagnostic disable: undefined-field
 local python = require("nvim-language-doc.languages.python")
 
 local function vim_setup(lines)
@@ -86,7 +85,7 @@ describe("extract correct module from code:", function()
                 "a = pathlib.Path.cwd()",
             }
             vim_setup(lines)
-            vim.api.nvim_win_set_cursor(0, { 2, 18 })
+            vim.api.nvim_win_set_cursor(0, { 2, 13 })
             local result = python.extract_module()
 
             assert.are.equal("pathlib.Path", result)
@@ -107,6 +106,83 @@ describe("extract correct module from code:", function()
             assert.are.equal("pathlib", result)
         end
     )
+    it(
+        "'import pathlib; pathlib.Path().cwd()' gets 'pathlib' cursor on pathlib",
+        function()
+            local lines = {
+                "import pathlib",
+                "a = pathlib.Path().cwd()",
+            }
+            vim_setup(lines)
+
+            vim.api.nvim_win_set_cursor(0, { 2, 5 })
+            local result = python.extract_module()
+
+            assert.are.equal("pathlib", result)
+        end
+    )
+
+    it(
+        "'import pathlib; pathlib.Path().cwd()' gets 'pathlib.Path' cursor on Path",
+        function()
+            local lines = {
+                "import pathlib",
+                "a = pathlib.Path().cwd()",
+            }
+            vim_setup(lines)
+
+            vim.api.nvim_win_set_cursor(0, { 2, 13 })
+            local result = python.extract_module()
+
+            assert.are.equal("pathlib.Path", result)
+        end
+    )
+    it(
+        "'import pathlib; pathlib.Path().cwd()' gets 'pathlib.Path.cwd' cursor on cwd",
+        function()
+            local lines = {
+                "import pathlib",
+                "a = pathlib.Path().cwd()",
+            }
+            vim_setup(lines)
+
+            vim.api.nvim_win_set_cursor(0, { 2, 20 })
+            local result = python.extract_module()
+
+            assert.are.equal("pathlib.Path.cwd", result)
+        end
+    )
 end)
 
-describe("extract from import statement", function() end)
+describe("extract from import statement with code: ", function()
+    it("'import pathlib' gets 'pathlib' cursor on 'pathlib'", function()
+        local lines = {
+            "import pathlib",
+        }
+        vim_setup(lines)
+        vim.api.nvim_win_set_cursor(0, { 1, 8 })
+        local result = python.extract_module()
+        assert.are.equal("pathlib", result)
+    end)
+    it(
+        "'from pathlib import Path' gets 'pathlib' cursor on 'pathlib'",
+        function()
+            local lines = {
+                "from pathlib import Path",
+            }
+            vim_setup(lines)
+            vim.api.nvim_win_set_cursor(0, { 1, 8 })
+            local result = python.extract_module()
+            assert.are.equal("pathlib", result)
+        end
+    )
+    it("'from pathlib import Path' gets 'Path' cursor on 'Path'", function()
+        local lines = {
+            "from pathlib import Path",
+        }
+        vim_setup(lines)
+        vim.api.nvim_win_set_cursor(0, { 1, 21 })
+        local result = python.extract_module()
+        assert.are.equal("pathlib.Path", result)
+    end)
+end)

@@ -1,33 +1,112 @@
+---@diagnostic disable: undefined-field
 local python = require("nvim-language-doc.languages.python")
 
-describe("extract_module", function()
+local function vim_setup(lines)
+    local bufnr = vim.api.nvim_create_buf(false, true)
+
+    vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
+    vim.api.nvim_set_current_buf(bufnr)
+
+    vim.bo[bufnr].filetype = "python"
+
+    vim.cmd("syntax enable")
+    vim.cmd("filetype detect")
+end
+
+describe("extract correct module from code:", function()
+    it("'import pathlib; pathlib.Path()' gets 'pathlib.Path'", function()
+        local lines = {
+            "import pathlib",
+            "p = pathlib.Path(__file__)",
+        }
+        vim_setup(lines)
+        vim.api.nvim_win_set_cursor(0, { 2, 15 })
+
+        local result = python.extract_module()
+        assert.are.equal("pathlib.Path", result)
+    end)
     it(
-        "extracts 'pathlib.Path' from 'import pathlib; pathlib.Path()'",
+        "'from pathlib import Path; Path(__file__)' gets 'pathlib.Path'",
         function()
-            local bufnr = vim.api.nvim_create_buf(false, true)
-
             local lines = {
-                "import pathlib",
-                "p = pathlib.Path(__file__)",
+                "from pathlib import Path",
+                "p = Path(__file__)",
             }
-
-            vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
-            vim.api.nvim_set_current_buf(bufnr)
-
-            -- Ensure filetype is python so Treesitter parser works
-            vim.bo[bufnr].filetype = "python"
-
-            -- Wait for Treesitter parser to attach
-            vim.cmd("syntax enable")
-            vim.cmd("filetype detect")
-
-            -- Manually move the cursor to the word 'Path'
-            vim.api.nvim_win_set_cursor(0, { 2, 15 }) -- line 2, column 15 (zero-based column!)
-
-            -- Run your plugin's function
+            vim_setup(lines)
+            vim.api.nvim_win_set_cursor(0, { 2, 4 })
             local result = python.extract_module()
 
             assert.are.equal("pathlib.Path", result)
         end
     )
+    it("'import yaml; yaml.full_load()' gets 'yaml' cursor on yaml", function()
+        local lines = {
+            "import yaml",
+            "yaml.full_load()",
+        }
+        vim_setup(lines)
+        vim.api.nvim_win_set_cursor(0, { 2, 0 })
+        local result = python.extract_module()
+
+        assert.are.equal("yaml", result)
+    end)
+    it(
+        "'import yaml; yaml.full_load()' gets 'yaml.full_load' cursor on full_load",
+        function()
+            local lines = {
+                "import yaml",
+                "yaml.full_load()",
+            }
+            vim_setup(lines)
+            vim.api.nvim_win_set_cursor(0, { 2, 5 })
+            local result = python.extract_module()
+
+            assert.are.equal("yaml.full_load", result)
+        end
+    )
+    it(
+        "'import pathlib; pathlib.Path.cwd()' gets 'pathlib.Path.cwd' cursor on cwd",
+        function()
+            local lines = {
+                "import pathlib",
+                "a = pathlib.Path.cwd()",
+            }
+            vim_setup(lines)
+            vim.api.nvim_win_set_cursor(0, { 2, 19 })
+            local result = python.extract_module()
+
+            assert.are.equal("pathlib.Path.cwd", result)
+        end
+    )
+    it(
+        "'import pathlib; pathlib.Path.cwd()' gets 'pathlib.Path' cursor on Path",
+        function()
+            local lines = {
+                "import pathlib",
+                "a = pathlib.Path.cwd()",
+            }
+            vim_setup(lines)
+            vim.api.nvim_win_set_cursor(0, { 2, 18 })
+            local result = python.extract_module()
+
+            assert.are.equal("pathlib.Path", result)
+        end
+    )
+    it(
+        "'import pathlib; pathlib.Path.cwd()' gets 'pathlib' cursor on pathlib",
+        function()
+            local lines = {
+                "import pathlib",
+                "a = pathlib.Path.cwd()",
+            }
+            vim_setup(lines)
+
+            vim.api.nvim_win_set_cursor(0, { 2, 5 })
+            local result = python.extract_module()
+
+            assert.are.equal("pathlib", result)
+        end
+    )
 end)
+
+describe("extract from import statement", function() end)

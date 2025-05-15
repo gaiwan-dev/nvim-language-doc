@@ -27,56 +27,75 @@ end
 ---@param identifier string: name of the word currently selected
 ---@return string?: argument to send to pydoc or nil if not found
 function M.find_import_node(identifier)
-    local cursor_node = ts_utils.get_node_at_cursor()
-    local root_node = cursor_node
+    local raw_node = ts_utils.get_node_at_cursor()
 
-    while root_node do
-        if root_node:type() == "module" then
-            break
+    local id_chain = identifier
+    do
+        local prev = raw_node:prev_sibling()
+        if prev and prev:type() == "." then
+            local attr = raw_node
+            while attr and attr:type() ~= "attribute" do
+                attr = attr:parent()
+            end
+            if attr then
+                id_chain = M.node_print(attr):gsub("[%(%)]", "")
+            end
         end
-        root_node = root_node:parent()
     end
-    if not root_node then
+
+    local root = id_chain:match("^[^%.]+")
+
+    local cur = raw_node
+    while cur and cur:type() ~= "module" do
+        cur = cur:parent()
+    end
+    if not cur then
         print("Module not found for", identifier)
         return nil
     end
 
-    for child, _ in root_node:iter_children() do
-        if child:type() == "import_statement" then
-            for sub, _ in child:iter_children() do
-                if sub:type() == "dotted_name" then
-                    local module_name = M.node_print(sub)
-
-                    if module_name == identifier then
-                        return module_name
-                    end
-
-                    local parent = cursor_node:parent()
-                    if parent and parent:type() == "attribute" then
-                        local prev = cursor_node:prev_sibling()
-                        if prev and prev:type() == "." then
-                            local parent_str = M.node_print(parent)
-                            local full_chain = parent_str:gsub("[%(%)]", "")
-                            if full_chain:match("^" .. module_name .. "%.") then
-                                return full_chain
-                            end
-                        end
-                    end
-
-                    return module_name .. "." .. identifier
-                end
-            end
-        elseif child:type() == "import_from_statement" then
+    -- handle `from X import Y` (so Path → pathlib.Path)
+    for child, _ in cur:iter_children() do
+        if child:type() == "import_from_statement" then
             local module_name
-
             for sub, _ in child:iter_children() do
                 if sub:type() == "dotted_name" and not module_name then
                     module_name = M.node_print(sub)
                 elseif
                     (sub:type() == "identifier" or sub:type() == "dotted_name")
-                    and M.node_print(sub) == identifier
+                    and M.node_print(sub) == root
                 then
-                    return module_name .. "." .. identifier
+                    -- build X.Y(.rest)
+                    local rest = id_chain:sub(#root + 2)
+                    if rest == "" then
+                        return module_name .. "." .. root
+                    else
+                        return module_name .. "." .. rest
+                    end
+                end
+            end
+        end
+    end
+
+    -- handle plain `import X` statements for one that defines our root
+    for child, _ in cur:iter_children() do
+        if child:type() == "import_statement" then
+            for sub, _ in child:iter_children() do
+                if sub:type() == "dotted_name" then
+                    local module_name = M.node_print(sub)
+
+                    if id_chain == module_name then
+                        return module_name
+                    end
+
+                    local esc = module_name:gsub("%.", "%%.")
+                    if
+                        root == module_name
+                        or module_name:match("^" .. root .. "%.")
+                        or root:match("^" .. esc .. "%.")
+                    then
+                        return id_chain
+                    end
                 end
             end
         end

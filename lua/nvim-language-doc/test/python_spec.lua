@@ -186,3 +186,66 @@ describe("extract from import statement with code: ", function()
         assert.are.equal("pathlib.Path", result)
     end)
 end)
+
+describe("extract from code when the import is not the first one: ", function()
+    it(
+        "'import yaml; import pathlib; pathlib.Path()' gets 'pathlib.Path' with cursor on 'Path'",
+        function()
+            local lines = {
+                "import yaml",
+                "import pathlib",
+                "a = pathlib.Path()",
+            }
+            vim_setup(lines)
+            vim.api.nvim_win_set_cursor(0, { 3, 13 })
+            local results = python.extract_module()
+
+            assert.are.equal("pathlib.Path", results)
+        end
+    )
+    it(
+        "'import yaml; import pathlib; pathlib.Path()' gets 'pathlib' with cursor on 'pathlib'",
+        function()
+            local lines = {
+                "import yaml",
+                "import pathlib",
+                "a = pathlib.Path()",
+            }
+            vim_setup(lines)
+            vim.api.nvim_win_set_cursor(0, { 3, 5 })
+            local results = python.extract_module()
+
+            assert.are.equal("pathlib", results)
+        end
+    )
+    it(
+        "'import yaml; from pathlib import Path; Path()' gets 'pathlib.Path' with cursor on 'Path'",
+        function()
+            local lines = {
+                "import yaml",
+                "from pathlib import Path",
+                "a = Path()",
+            }
+            vim_setup(lines)
+            vim.api.nvim_win_set_cursor(0, { 3, 5 })
+            local results = python.extract_module()
+
+            assert.are.equal("pathlib.Path", results)
+        end
+    )
+    it(
+        "'import yaml; import pathlib; pathlib.Path().cwd()' gets 'pathlib.Path.cwd' with cursor on 'cwd'",
+        function()
+            local lines = {
+                "import yaml",
+                "import pathlib",
+                "a = pathlib.Path()",
+            }
+            vim_setup(lines)
+            vim.api.nvim_win_set_cursor(0, { 3, 13 })
+            local results = python.extract_module()
+
+            assert.are.equal("pathlib.Path.cwd", results)
+        end
+    )
+end)

@@ -59,7 +59,7 @@ Currently the only language fully supported is python, with all the parsing and 
 
 ### Working Example
 
-![Demo](media/demo.mp4)
+![Demo](media/demo.gif)
 
 
 

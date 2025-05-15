@@ -52,7 +52,7 @@ lang_doc.setup({
 ```
 
 `window.postion` determins where the window will be opened. Default to `right`.
-```
+
 ### Language Support
 
 Currently the only language fully supported is python, with all the parsing and import recognition done in `lua/nvim-language-doc/languages/python.lua`.

@@ -1,5 +1,3 @@
--- TODO: need to also see how it behaves when imports are in parentesis
-
 local python = require("nvim-language-doc.languages.python")
 
 local function vim_setup(lines)
@@ -236,6 +234,22 @@ describe("extract from code when the import is not the first one: ", function()
         end
     )
     it(
+        "'import yaml; from pathlib import Path; Path().cwd()' gets 'pathlib.Path.cwd' with cursor on 'cwd'",
+        function()
+            local lines = {
+                "import yaml",
+                "from pathlib import Path",
+                "a = Path().cwd()",
+            }
+            vim_setup(lines)
+            vim.api.nvim_win_set_cursor(0, { 3, 13 })
+            local results = python.extract_module()
+
+            assert.are.equal("pathlib.Path.cwd", results)
+        end
+    )
+
+    it(
         "'import yaml; import pathlib; pathlib.Path().cwd()' gets 'pathlib.Path.cwd' with cursor on 'cwd'",
         function()
             local lines = {
@@ -281,6 +295,21 @@ describe("extract from code when the import is not the first one: ", function()
             local results = python.extract_module()
 
             assert.are.equal("typing.Optional", results)
+        end
+    )
+    it(
+        "'from itertools import chain; chain.from_iterable()' gets 'itertools.chain.from_iterable' with cursor on 'from_iterable'",
+        function()
+            local lines = {
+                "from itertools import chain",
+                "chain.from_iterable()",
+            }
+
+            vim_setup(lines)
+            vim.api.nvim_win_set_cursor(0, { 2, 7 })
+            local results = python.extract_module()
+
+            assert.are.equal("itertools.chain.from_iterable", results)
         end
     )
 end)

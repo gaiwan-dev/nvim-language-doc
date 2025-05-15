@@ -28,7 +28,6 @@ end
 ---@return string?: argument to send to pydoc or nil if not found
 function M.find_import_node(identifier)
     local raw_node = ts_utils.get_node_at_cursor()
-
     local id_chain = identifier
     do
         local prev = raw_node:prev_sibling()
@@ -54,7 +53,7 @@ function M.find_import_node(identifier)
         return nil
     end
 
-    -- handle `from X import Y` (so Path → pathlib.Path)
+    -- handle `from X import Y` first
     for child, _ in cur:iter_children() do
         if child:type() == "import_from_statement" then
             local module_name
@@ -65,19 +64,13 @@ function M.find_import_node(identifier)
                     (sub:type() == "identifier" or sub:type() == "dotted_name")
                     and M.node_print(sub) == root
                 then
-                    -- build X.Y(.rest)
-                    local rest = id_chain:sub(#root + 2)
-                    if rest == "" then
-                        return module_name .. "." .. root
-                    else
-                        return module_name .. "." .. rest
-                    end
+                    return module_name .. "." .. id_chain
                 end
             end
         end
     end
 
-    -- handle plain `import X` statements for one that defines our root
+    -- handle plain `import X` statements
     for child, _ in cur:iter_children() do
         if child:type() == "import_statement" then
             for sub, _ in child:iter_children() do

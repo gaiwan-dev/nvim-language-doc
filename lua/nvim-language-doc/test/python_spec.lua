@@ -1,3 +1,5 @@
+-- TODO: need to also see how it behaves when imports are in parentesis
+
 local python = require("nvim-language-doc.languages.python")
 
 local function vim_setup(lines)
@@ -239,10 +241,10 @@ describe("extract from code when the import is not the first one: ", function()
             local lines = {
                 "import yaml",
                 "import pathlib",
-                "a = pathlib.Path()",
+                "a = pathlib.Path().cwd()",
             }
             vim_setup(lines)
-            vim.api.nvim_win_set_cursor(0, { 3, 13 })
+            vim.api.nvim_win_set_cursor(0, { 3, 21 })
             local results = python.extract_module()
 
             assert.are.equal("pathlib.Path.cwd", results)

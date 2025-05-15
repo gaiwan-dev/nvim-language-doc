@@ -250,4 +250,37 @@ describe("extract from code when the import is not the first one: ", function()
             assert.are.equal("pathlib.Path.cwd", results)
         end
     )
+    it(
+        "'from typing import (Annotated, Optional)' gets 'typing.Optional' with cursor on 'Optional'",
+        function()
+            local lines = {
+                "from typing import (",
+                "    Union,",
+                "    Optional,",
+                ")",
+            }
+            vim_setup(lines)
+            vim.api.nvim_win_set_cursor(0, { 3, 7 })
+            local results = python.extract_module()
+
+            assert.are.equal("typing.Optional", results)
+        end
+    )
+    it(
+        "'from typing import (Annotated, Optional); TYPE = Optional[str]' gets 'typing.Optional' with cursor on 'Optional'",
+        function()
+            local lines = {
+                "from typing import (",
+                "    Union,",
+                "    Optional,",
+                ")",
+                "TYPE = Optional[str]",
+            }
+            vim_setup(lines)
+            vim.api.nvim_win_set_cursor(0, { 5, 9 })
+            local results = python.extract_module()
+
+            assert.are.equal("typing.Optional", results)
+        end
+    )
 end)

@@ -10,8 +10,10 @@ local function vim_setup(lines)
 
     vim.bo[bufnr].filetype = "python"
 
-    local parser = vim.treesitter.get_parser(bufnr, "python")
-    parser:parse()
+    local ok, parser = pcall(vim.treesitter.get_parser, bufnr, "python")
+    if ok and parser then
+        parser:parse()
+    end
 end
 
 describe("extract correct module from code:", function()

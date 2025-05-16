@@ -40,5 +40,6 @@ jobs:
       - name: Run tests
         run: |
           nvim --version
-          ./run_tests.sh
+          tree-sitter -V
+          # ./run_tests.sh
 

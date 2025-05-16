@@ -1,15 +1,17 @@
 local python = require("nvim-language-doc.languages.python")
-
+local filename_counter = 0
 local function vim_setup(lines)
+    filename_counter = filename_counter + 1
     local bufnr = vim.api.nvim_create_buf(false, true)
+    vim.api.nvim_buf_set_name(bufnr, "test" .. filename_counter .. ".py")
 
     vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
     vim.api.nvim_set_current_buf(bufnr)
 
     vim.bo[bufnr].filetype = "python"
 
-    vim.cmd("syntax enable")
-    vim.cmd("filetype detect")
+    local parser = vim.treesitter.get_parser(bufnr, "python")
+    parser:parse()
 end
 
 describe("extract correct module from code:", function()

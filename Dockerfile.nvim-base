@@ -1,23 +1,8 @@
-FROM alpine:latest
+# Stage 1: Build Neovim using pre-built builder image
+FROM nvim-builder AS builder
 
-ENV NVIM_VERSION=0.11
-ENV HOME=/home/nvimuser
+ARG NVIM_VERSION=0.11
 
-RUN apk update && apk add --no-cache \
-    git \
-    build-base \
-    cmake \
-    gettext \
-    gettext-dev \
-    python3 \
-    py3-virtualenv \
-    lua5.4 \
-    luarocks \
-    npm \
-    && ln -sf /usr/bin/lua5.4 /usr/bin/lua \
-    && ln -sf /usr/bin/luarocks-5.4 /usr/bin/luarocks
-
-    # Install Neovim from source
 RUN git clone --depth 1 --branch release-${NVIM_VERSION} https://github.com/neovim/neovim.git && \
     cd neovim && \
     make CMAKE_BUILD_TYPE=RelWithDebInfo && \
@@ -25,11 +10,27 @@ RUN git clone --depth 1 --branch release-${NVIM_VERSION} https://github.com/neov
     chmod 755 /usr/local/bin/nvim && \
     cd .. && rm -rf neovim
 
+# Stage 2: Final image
+FROM alpine:latest
+
+ENV HOME=/home/nvimuser
+
+# Copy Neovim binary from the builder
+COPY --from=builder /usr/local/bin/nvim /usr/local/bin/nvim
+
+# Add runtime-only dependencies
+RUN apk add --no-cache \
+    lua5.4 \
+    luarocks \
+    python3 \
+    py3-virtualenv \
+    && ln -sf /usr/bin/lua5.4 /usr/bin/lua \
+    && ln -sf /usr/bin/luarocks-5.4 /usr/bin/luarocks
+
 # Create non-root user
 RUN addgroup -S nvimuser && \
     adduser -S -G nvimuser -s /bin/sh -h /home/nvimuser nvimuser && \
     chown -R nvimuser:nvimuser /home/nvimuser
 
-# Switch to the user and set home directory
 USER nvimuser
 WORKDIR /home/nvimuser

@@ -1,0 +1,15 @@
+# Dockerfile.nvim-builder
+FROM alpine:latest
+
+RUN apk update && apk add --no-cache \
+    git \
+    build-base \
+    cmake \
+    gettext \
+    gettext-dev \
+    python3 \
+    py3-virtualenv \
+    lua5.4 \
+    luarocks \
+    npm
+    

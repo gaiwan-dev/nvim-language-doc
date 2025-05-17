@@ -6,30 +6,15 @@ ENV HOME=/home/nvimuser
 # Install system and build dependencies
 RUN apk update && apk add --no-cache \
     git \
-    ca-certificates \
     build-base \
     cmake \
-    ninja \
     gettext \
     gettext-dev \
-    libtool \
     python3 \
-    py3-pip \
     py3-virtualenv \
     lua5.4 \
     luarocks \
-    nodejs \
     npm \
-    fzf \
-    ripgrep \
-    fd \
-    bash \
-    curl \
-    unzip \
-    gzip \
-    ncurses \
-    shadow \
-    && ln -sf python3 /usr/bin/python \ 
     && ln -sf /usr/bin/lua5.4 /usr/bin/lua \
     && ln -sf /usr/bin/luarocks-5.4 /usr/bin/luarocks 
 
@@ -43,7 +28,9 @@ RUN git clone --depth 1 --branch release-${NVIM_VERSION} https://github.com/neov
     cd .. && rm -rf neovim
 
 # Create non-root user
-RUN useradd -m -s /bin/bash nvimuser && chown -R nvimuser:nvimuser /home/nvimuser
+RUN addgroup -S nvimuser && \
+    adduser -S -G nvimuser -s /bin/sh -h /home/nvimuser nvimuser && \
+    chown -R nvimuser:nvimuser /home/nvimuser
 
 # Switch to the user and set home directory
 USER nvimuser
@@ -67,5 +54,5 @@ RUN nvim --headless "+Lazy! sync" +qa && \
 # Run plugin tests
 # RUN cd /home/nvimuser/.local/share/nvim/lazy/nvim-language-doc && ./run_tests.sh
 
-CMD ["/bin/bash"]
+CMD ["/bin/sh"]
 

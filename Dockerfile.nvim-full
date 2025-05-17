@@ -29,7 +29,6 @@ RUN apk update && apk add --no-cache \
     unzip \
     gzip \
     ncurses \
-    shadow \
     lazygit \
     && ln -sf python3 /usr/bin/python \ 
     && ln -sf /usr/bin/lua5.4 /usr/bin/lua \
@@ -45,7 +44,9 @@ RUN git clone --depth 1 --branch release-${NVIM_VERSION} https://github.com/neov
     cd .. && rm -rf neovim
 
 # Create non-root user
-RUN useradd -m -s /bin/bash nvimuser && chown -R nvimuser:nvimuser /home/nvimuser
+RUN addgroup -S nvimuser && \
+    adduser -S -G nvimuser -s /bin/sh -h /home/nvimuser nvimuser && \
+    chown -R nvimuser:nvimuser /home/nvimuser
 
 # Switch to the user and set home directory
 USER nvimuser

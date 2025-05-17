@@ -1,40 +1,4 @@
-FROM alpine:latest
-
-ENV NVIM_VERSION=0.11
-ENV HOME=/home/nvimuser
-
-# Install system and build dependencies
-RUN apk update && apk add --no-cache \
-    git \
-    build-base \
-    cmake \
-    gettext \
-    gettext-dev \
-    python3 \
-    py3-virtualenv \
-    lua5.4 \
-    luarocks \
-    npm \
-    && ln -sf /usr/bin/lua5.4 /usr/bin/lua \
-    && ln -sf /usr/bin/luarocks-5.4 /usr/bin/luarocks 
-
-
-# Install Neovim from source
-RUN git clone --depth 1 --branch release-${NVIM_VERSION} https://github.com/neovim/neovim.git && \
-    cd neovim && \
-    make CMAKE_BUILD_TYPE=RelWithDebInfo && \
-    make install && \
-    chmod 755 /usr/local/bin/nvim && \
-    cd .. && rm -rf neovim
-
-# Create non-root user
-RUN addgroup -S nvimuser && \
-    adduser -S -G nvimuser -s /bin/sh -h /home/nvimuser nvimuser && \
-    chown -R nvimuser:nvimuser /home/nvimuser
-
-# Switch to the user and set home directory
-USER nvimuser
-WORKDIR /home/nvimuser
+FROM nvim-base:latest
 
 # Setup Neovim config
 RUN git clone https://github.com/gaiwan-dev/neovim.git && \
@@ -54,5 +18,6 @@ RUN nvim --headless "+Lazy! sync" +qa && \
 # Run plugin tests
 # RUN cd /home/nvimuser/.local/share/nvim/lazy/nvim-language-doc && ./run_tests.sh
 
-CMD ["/bin/sh"]
+
+CMD ["/usr/local/bin/nvim"]
 

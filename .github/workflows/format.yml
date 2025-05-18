@@ -7,7 +7,6 @@ on:
 
 jobs:
   format:
-    name: format lua dir
     runs-on: ubuntu-latest
     
     steps:
@@ -21,7 +20,7 @@ jobs:
       
       - name: restore cargo bin cache
         id: cache-stylua
-        uses: actions/cache@4
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry

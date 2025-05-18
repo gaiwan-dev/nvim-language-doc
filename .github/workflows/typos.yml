@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  lint:
+  typos:
     runs-on: ubuntu-latest
     
     steps:

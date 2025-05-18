@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  lint:
+  format:
     name: lint lua dir
     runs-on: ubuntu-latest
     

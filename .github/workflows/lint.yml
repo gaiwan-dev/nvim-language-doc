@@ -33,7 +33,7 @@ jobs:
       - name: echo
         run: which lua
       - name: add luacheck to path
-        run: echo "/usr/local/bin/luacheck" >> $GITHUB_PATH
+        run: echo "~/.luarocks/bin" >> $GITHUB_PATH
 
       - name: lint
         run: luacheck lua/ --globals vim

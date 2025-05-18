@@ -18,7 +18,7 @@ jobs:
         id: cache-luacheck
         uses: actions/cache@v4
         with:
-          path: /usr/local/bin/luacheck
+          path: /usr/local/bin
           key: luacheck-bin-${{ runner.os }}-v1
           restore-keys: |
             luacheck-bin-${{ runner.os }}-
@@ -27,9 +27,11 @@ jobs:
         if: steps.cache-luacheck.outputs.cache-hit != 'true'
         run: |
           sudo apt-get update
-          sudo apt-get install luarocks -y
+          sudo apt-get install luarocks5.4 -y
           sudo luarocks install luacheck
       
+      - name: echo
+        run: which lua5.4
       - name: add luacheck to path
         run: echo "/usr/local/bin/luacheck" >> $GITHUB_PATH
 

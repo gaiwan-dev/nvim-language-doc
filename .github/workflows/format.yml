@@ -30,7 +30,7 @@ jobs:
             stylua-bin-${{ runner.os }}-
             
       - name: install
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache-stylua.outputs.cache-hit != 'true'
         run: cargo install stylua --locked
 
       - name: add cargo bin to path

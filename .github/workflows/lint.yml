@@ -18,7 +18,7 @@ jobs:
         id: cache-luacheck
         uses: actions/cache@v4
         with:
-          path: /usr/local/bin
+          path: ~/.luarocks
           key: luacheck-bin-${{ runner.os }}-v1
           restore-keys: |
             luacheck-bin-${{ runner.os }}-
@@ -28,7 +28,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install luarocks -y
-          sudo luarocks install luacheck
+          luarocks --local install luacheck
       
       - name: echo
         run: which lua

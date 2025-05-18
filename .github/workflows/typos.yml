@@ -10,26 +10,26 @@ jobs:
     name: typos
     runs-on: ubuntu-latest
     
-  steps:
-    - name: checkout code
-      uses: actions/checkout@v4
-  
-    - name: restore cache
-      id: cache
-      uses: actions/cache@v4
-      with: 
-        path: |
-          ~/.cargo/bin
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+    
+      - name: restore cache
+        id: cache
+        uses: actions/cache@v4
+        with: 
+          path: |
+            ~/.cargo/bin
 
-        key: ${{ runner.os }}-cargo-${{ hashFiles('weekly') }}
+          key: ${{ runner.os }}-cargo-${{ hashFiles('weekly') }}
 
-    - name: install
-      if: steps.cache.outputs.cache-hit != 'true'
-      run: cargo install typos
+      - name: install
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: cargo install typos
 
-    - name: typos
-      run: typos .
+      - name: typos
+        run: typos .
 
-          
+            
 
 

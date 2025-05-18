@@ -9,9 +9,10 @@ jobs:
   lint:
     name: luacheck
     runs-on: ubuntu-latest
+
     steps:
       - name: checkout code
-        uses: action/checkout@v4
+        uses: actions/checkout@v4
 
       - name: setup
         run: |

@@ -26,10 +26,9 @@ jobs:
       - name: install
         if: steps.cache.outputs.cache-hit != 'true'
         run: cargo install typos-cli
+  
+      - name: add cargo bin to PATH
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: typos
         run: typos .
-
-            
-
-

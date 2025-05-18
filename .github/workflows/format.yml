@@ -30,6 +30,3 @@ jobs:
 
       - name: format
         run: stylua --check lua/ --config-path=.stylua.toml
-
-            
-

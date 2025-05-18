@@ -31,6 +31,6 @@ jobs:
         run: |
           docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace \
             ghcr.io/${{ secrets.GHCR_USERNAME }}/nvim-essential:latest \
-            "sh -c "nvim --version && ./run_tests.sh"
+            sh -c "nvim --version && ./run_tests.sh"
 
 

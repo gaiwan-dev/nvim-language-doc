@@ -13,13 +13,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Create directories
+        run: |
+          mkdir -p ~/.cargo/registry
+          mkdir -p ~/.cargo/bin
+
       - name: Restore Cargo bin cache
         id: cache-typos
         uses: actions/cache@v4
         with: 
           path: |
-            $HOME/.cargo/registry
-            $HOME/.cargo/bin
+            ~/.cargo/registry
+            ~/.cargo/bin
           key: typos-bin-${{ runner.os }}-v1
           restore-keys: |
             typos-bin-${{ runner.os }}-
@@ -29,7 +34,7 @@ jobs:
         run: cargo install typos-cli --locked
 
       - name: Add Cargo bin to PATH
-        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        run: echo "~/.cargo/bin" >> $GITHUB_PATH
 
       - name: Run typos
         run: typos .

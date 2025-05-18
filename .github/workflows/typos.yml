@@ -20,8 +20,10 @@ jobs:
         id: cache-typos
         uses: actions/cache@v4
         with: 
-          path: ${{ runner.home }}/.cargo/bin
-          key: typos-bin-${{ runner.os }}-${{ github.sha }}
+          path: |
+            ${{ runner.home }}/.cargo/registry
+            ${{ runner.home }}/.cargo/bin
+          key: typos-bin-${{ runner.os }}-v1
           restore-keys: |
             typos-bin-${{ runner.os }}-
 

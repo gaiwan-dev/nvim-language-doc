@@ -1,0 +1,21 @@
+name: lint
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    name: luacheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: action/checkout@v3
+      - name: setup
+        run: |
+          sudo apt-get update
+          sudo apt-get install luarocks -y
+          sudo luarocks install luacheck
+
+      - name: lint
+        run: luacheck lua/ --globals vim

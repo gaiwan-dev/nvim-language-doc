@@ -13,25 +13,12 @@ jobs:
     steps:
       - name: checkout code
         uses: actions/checkout@v4
-      
-      - name: restore luacheck cache
-        id: cache-luacheck
-        uses: actions/cache@v4
-        with:
-          path: ~/.luarocks
-          key: luacheck-bin-${{ runner.os }}-v1
-          restore-keys: |
-            luacheck-bin-${{ runner.os }}-
-
+       
       - name: install
-        if: steps.cache-luacheck.outputs.cache-hit != 'true'
         run: |
           sudo apt update
           sudo apt install luarocks -y
           luarocks --local install luacheck
       
-      - name: add luacheck to path
-        run: echo "~/.luarocks/bin" >> $GITHUB_PATH
-
       - name: lint
         run: luacheck lua/ --globals vim

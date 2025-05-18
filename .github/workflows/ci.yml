@@ -30,7 +30,7 @@ jobs:
       - name: Run tests
         run: |
           docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace \
-            ghcr.io/${{ secrets.GHCR_USERNAME }}/nvim-essential:latest 
+            ghcr.io/${{ secrets.GHCR_USERNAME }}/nvim-essential:latest \
             sh -c "cd /home/nvimuser/.local/share/nvim/lazy/nvim-language-doc && nvim --version && ./run_tests.sh"
 
 

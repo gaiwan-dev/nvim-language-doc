@@ -26,12 +26,12 @@ jobs:
       - name: install
         if: steps.cache-luacheck.outputs.cache-hit != 'true'
         run: |
-          sudo apt-get update
-          sudo apt-get install luarocks5.4 -y
+          sudo apt update
+          sudo apt install luarocks -y
           sudo luarocks install luacheck
       
       - name: echo
-        run: which lua5.4
+        run: which lua
       - name: add luacheck to path
         run: echo "/usr/local/bin/luacheck" >> $GITHUB_PATH
 

@@ -12,7 +12,7 @@ jobs:
     
   steps:
     - name: checkout code
-      uses: action/checkout@v3
+      uses: action/checkout@v4
 
   
     - name: restore cache

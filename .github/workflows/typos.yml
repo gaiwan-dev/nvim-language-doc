@@ -10,15 +10,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: checkout code
         uses: actions/checkout@v4
       
-      - name: Create directories
+      - name: create directories
         run: |
           mkdir -p ~/.cargo/registry
           mkdir -p ~/.cargo/bin
 
-      - name: Restore Cargo bin cache
+      - name: restore cargo bin cache
         id: cache-typos
         uses: actions/cache@v4
         with: 
@@ -29,13 +29,13 @@ jobs:
           restore-keys: |
             typos-bin-${{ runner.os }}-
 
-      - name: Install typos-cli if not cached
+      - name: install 
         if: steps.cache-typos.outputs.cache-hit != 'true'
         run: cargo install typos-cli --locked
 
-      - name: Add Cargo bin to PATH
+      - name: add cargo bin to path
         run: echo "~/.cargo/bin" >> $GITHUB_PATH
 
-      - name: Run typos
+      - name: run typos
         run: typos .
 

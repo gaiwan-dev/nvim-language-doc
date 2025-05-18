@@ -7,26 +7,35 @@ on:
 
 jobs:
   format:
-    name: lint lua dir
+    name: format lua dir
     runs-on: ubuntu-latest
     
     steps:
       - name: checkout code
         uses: actions/checkout@v4
 
-    
-      - name: restore cache
-        id: cache
-        uses: actions/cache@v3
-        with: 
+      - name: create directories
+        run: | 
+          mkdir -p ~/.cargo/bin
+          mkdir -p ~/.cargo/registry
+      
+      - name: restore cargo bin cache
+        id: cache-stylua
+        uses: actions/cache@4
+        with:
           path: |
+            ~/.cargo/registry
             ~/.cargo/bin
-
-          key: ${{ runner.os }}-cargo-${{ hashFiles('weekly') }}
-
+          key: stylua-bin-${{ runner.os }}-v1
+          restore-keys: |
+            stylua-bin-${{ runner.os }}-
+            
       - name: install
         if: steps.cache.outputs.cache-hit != 'true'
-        run: cargo install stylua
+        run: cargo install stylua --locked
+
+      - name: add cargo bin to path
+        run: echo "~/.cargo/bin" >> $GITHUB_PATH
 
       - name: format
         run: stylua --check lua/ --config-path=.stylua.toml

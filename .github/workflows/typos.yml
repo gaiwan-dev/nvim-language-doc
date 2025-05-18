@@ -19,11 +19,11 @@ jobs:
         uses: actions/cache@v4
         with: 
           path: |
-            ~/.cargo/bin
+            ${{ runner.home }}/cargo/bin
 
           key: ${{ runner.os }}-cargo-${{ hashFiles('weekly') }}
 
-      - name: install
+      - name: install if not cached
         if: steps.cache.outputs.cache-hit != 'true'
         run: cargo install typos-cli
   

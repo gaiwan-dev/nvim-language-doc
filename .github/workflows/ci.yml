@@ -1,6 +1,9 @@
 name: Tests
 
-on: [push, pull_request]
+on: 
+  workflow-dispatch:
+  push: 
+  pull_request:
 
 jobs:
   unit_tests:

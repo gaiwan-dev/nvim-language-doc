@@ -30,8 +30,6 @@ jobs:
           sudo apt install luarocks -y
           luarocks --local install luacheck
       
-      - name: echo
-        run: which lua
       - name: add luacheck to path
         run: echo "~/.luarocks/bin" >> $GITHUB_PATH
 

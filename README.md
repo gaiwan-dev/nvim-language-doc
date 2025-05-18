@@ -51,7 +51,7 @@ lang_doc.setup({
 })
 ```
 
-`window.postion` determins where the window will be opened. Default to `right`.
+`window.position` determines where the window will be opened. Default to `right`.
 
 ### Language Support
 

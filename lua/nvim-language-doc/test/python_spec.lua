@@ -285,7 +285,8 @@ describe("extract from code when the import is not the first one: ", function()
         end
     )
     it(
-        "'from typing import (Annotated, Optional); TYPE = Optional[str]' gets 'typing.Optional' with cursor on 'Optional'",
+        "'from typing import (Annotated, Optional); TYPE = Optional[str]' "
+            .. "gets 'typing.Optional' with cursor on 'Optional'",
         function()
             local lines = {
                 "from typing import (",
@@ -302,7 +303,8 @@ describe("extract from code when the import is not the first one: ", function()
         end
     )
     it(
-        "'from itertools import chain; chain.from_iterable()' gets 'itertools.chain.from_iterable' with cursor on 'from_iterable'",
+        "'from itertools import chain; chain.from_iterable()' "
+            .. "gets 'itertools.chain.from_iterable' with cursor on 'from_iterable'",
         function()
             local lines = {
                 "from itertools import chain",

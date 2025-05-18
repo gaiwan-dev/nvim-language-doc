@@ -31,7 +31,7 @@ jobs:
           sudo luarocks install luacheck
       
       - name: echo
-        run: echo "which luacheck"
+        run: which luacheck
 
       - name: add luacheck to path
         run: echo "/usr/bin/luacheck" >> $GITHUB_PATH

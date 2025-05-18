@@ -11,11 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     
   steps:
-    - uses: actions/checkout@v4
+    - name: checkout code
+      uses: actions/checkout@v3
   
     - name: restore cache
       id: cache
-      uses: actions/cache@v4
+      uses: actions/cache@v3
       with: 
         path: |
           ~/.cargo/bin

@@ -10,7 +10,9 @@ jobs:
     name: luacheck
     runs-on: ubuntu-latest
     steps:
-      - uses: action/checkout@v3
+      - name: checkout code
+        uses: action/checkout@v3
+
       - name: setup
         run: |
           sudo apt-get update

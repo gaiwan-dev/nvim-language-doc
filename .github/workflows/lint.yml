@@ -18,7 +18,7 @@ jobs:
         run: |
           sudo apt update
           sudo apt install luarocks -y
-          luarocks install luacheck
+          luarocks --local install luacheck
       
       - name: lint
-        run: luacheck lua/ --globals vim
+        run: ~/.luarocks/bin/luacheck lua/ --globals vim
